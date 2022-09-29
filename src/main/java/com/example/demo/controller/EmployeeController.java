@@ -20,84 +20,79 @@ import com.example.demo.model.Employee;
 import com.example.demo.repository.EmployeeRepository;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/employee")
 public class EmployeeController {
 
 	@Autowired
 	EmployeeRepository employeeRepository;
-	
-	//READ OERATIONS
-	
-	//Read all data
-	@GetMapping("/getAll")
+
+	// READ OERATIONS
+
+	// Read all data
+	@GetMapping
 	public ResponseEntity<List<Employee>> getAllEmployee() {
 		System.out.println("test");
 		try {
 			return new ResponseEntity<List<Employee>>(employeeRepository.findAll(), HttpStatus.OK);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-	//Read based on conditions
-	
-	//Read based on conditions
-		@GetMapping("/{employeeid}")
-		public ResponseEntity<Employee> getAllEmployeeById(@PathVariable String employeeid) {
-			try {
-				return new ResponseEntity<Employee>(employeeRepository.findById(employeeid).get(), HttpStatus.OK);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				return new ResponseEntity(null, HttpStatus.OK);
-			}
-		}
-	
-	@GetMapping("/by-name")
-	public ResponseEntity<List<Employee>> getAllEmployee(@RequestParam String name) {
+
+	// Read based on conditions
+
+	// Read based on conditions
+	@GetMapping("/{employeeid}")
+	public ResponseEntity<Employee> getAllEmployeeById(@PathVariable String employeeid) {
 		try {
-			return new ResponseEntity<List<Employee>>(employeeRepository.findByName(name), HttpStatus.OK);
-		}
-		catch (Exception e) {
+			return new ResponseEntity<Employee>(employeeRepository.findById(employeeid).get(), HttpStatus.OK);
+		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity(null, HttpStatus.OK);
 		}
 	}
-	
-	//CREATE OPERATIONS
-	
-	//Insert one document
+
+	@GetMapping("/by-name")
+	public ResponseEntity<List<Employee>> getAllEmployee(@RequestParam String name) {
+		try {
+			return new ResponseEntity<List<Employee>>(employeeRepository.findByName(name), HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity(null, HttpStatus.OK);
+		}
+	}
+
+	// CREATE OPERATIONS
+
+	// Insert one document
 	@PostMapping
 	public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
 		try {
 			return new ResponseEntity<Employee>(employeeRepository.save(employee), HttpStatus.CREATED);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-	//Insert multiple documents
+
+	// Insert multiple documents
 	@PostMapping("bulk-insert")
 	public ResponseEntity<List<Employee>> createEmployees(@RequestBody List<Employee> employees) {
 		try {
 			return new ResponseEntity<List<Employee>>(employeeRepository.saveAll(employees), HttpStatus.CREATED);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-	//UPDATE OPERATION
-	
-	@PutMapping("{employeeid}")
-	public ResponseEntity<Employee> updateEmployee(@RequestBody Employee employee) {
-		Optional<Employee> employeeData = employeeRepository.findById(employee.getEmployeeId());
-		if(employeeData.isPresent()) {
+
+	// UPDATE OPERATION
+
+	@PutMapping("/{employeeId}")
+	public ResponseEntity<Employee> updateEmployee(@PathVariable String employeeId, @RequestBody Employee employee) {
+		Optional<Employee> employeeData = employeeRepository.findById(employeeId);
+		if (employeeData.isPresent()) {
 			Employee updatedEmployee = new Employee();
 			updatedEmployee.setName(employee.getName());
 			updatedEmployee.setAddress(employee.getAddress());
@@ -109,13 +104,12 @@ public class EmployeeController {
 		}
 		return new ResponseEntity(null, HttpStatus.NOT_FOUND);
 	}
-	
-	
-	//DELETE OPERATION
+
+	// DELETE OPERATION
 	@DeleteMapping("{employeeid}")
 	public ResponseEntity<HttpStatus> deleteEmployee(@PathVariable String employeeid) {
 		Optional<Employee> employeeData = employeeRepository.findById(employeeid);
-		if(employeeData.isPresent()) {
+		if (employeeData.isPresent()) {
 			employeeRepository.deleteById(employeeid);
 			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
 		}
